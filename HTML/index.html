@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>LE PEN DU GEEK</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../CSS/bootstrap-4/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../CSS/album.css" rel="stylesheet">
+  
+
+  
+    <script type="text/javascript" src="../Jquery/jquery-3.3.1.js"> </script>
+   
+<script> 
+
+$(document).ready(function() 
+{
+    var cptNbMotXML=0;
+    var motADeviner; 
+    var lettreDeDepart; 
+
+    getSizeOfXml();
+    initGetOneWordRand();
+    alert(cptNbMotXML);
+    
+/*---------------------------------------------*/
+     $("#bouttonEnvoi").click(function() 
+        {
+            var test = false;
+             $("#LettreDejaDit li").each(function() 
+                {
+                   test =  verifierPresenceDansLettreDejaUtilise($(this));
+                });
+
+            //Si test est faux alors on ajoute on ajout la lettre dans le formulaire dans la liste 
+            if (test==false)
+            {
+                $("<li>").html($("#lettre").val()).appendTo("#LettreDejaDit");
+               
+            }
+        });
+
+//Fonction qui se declanche par appel de #bouttonEnvoi
+//verifier si la lettre dans le formulaire et la meme que dans l'élement courant
+function verifierPresenceDansLettreDejaUtilise()
+{
+    if (e.text() == $("#lettre").val())
+    {
+       alert("Vous avez deja utilisé cette valeur");
+       return true;
+    }
+    else 
+    {
+        return false;
+    }
+}
+/*---------------------------------------------*/
+ //Recupere un event action clavier sur la partie ajout d'un lettre
+ $("#lettre").keypress(function() 
+ {
+    verifierQueSeulUneLettreEnvoi();
+ });
+//S'assure que seul une lettre soit passer dans l'input 
+ function verifierQueSeulUneLettreEnvoi()
+ {      
+        if($("#lettre").val().length!=0)
+        {
+            var a="";
+            $("#lettre").val(a);
+        }
+ }
+/*---------------------------------------------*/
+//Affiche le nombre de case correspondent au nombre lettre dans le mot
+function initCase(a)
+{
+    for (var i = 0; i<a; i++)
+    {
+        $("<li>").html(i).appendTo("#espaceDeJeu ul");
+    }
+}
+/*---------------------------------------------*/
+//Appel la fonction TraitementXML qui range dans la variable globale cptNbMotXML
+//le nombre de mot contenu dans le fichier XML
+function getSizeOfXml()
+{
+    $.get("../XML/publication.xml",{},TraitementXML,"xml");
+}
+
+function TraitementXML(Xreponse)
+{
+    var Xstatus = $(Xreponse).find('mot').each(
+					function()
+					{  
+						cptNbMotXML++; 
+					}
+				);
+    
+}
+
+/*---------------------------------------------*/
+//Appel la fonction getXML qui range dans la variable globale motADeviner 
+//le mot avec lequel on va jouer et lettreDeDepart la lettre a affiche au debut
+function initGetOneWordRand() 
+{
+$.get("../XML/publication.xml",{},getXML,"xml");
+}
+
+function getXML (Xreponse)
+{
+    var indiceMotAPrendre = (Math.floor((cptNbMotXML-1)*Math.random())+1); 
+    var cpt = 1;    
+    var Xstatus = $(Xreponse).find('mot').each(
+					function()
+					{  
+                        if(cpt==indiceMotAPrendre)
+                        {
+                            motADeviner = $(this).find('nom').text();
+                            lettreDeDepart = $(this).find('lettre').text();
+                        }
+                        else 
+                        {
+                            cpt++;
+                        }
+					}
+				);
+}
+/*www.codingame.com*/ 
+
+  
+//Fin de Dom ready 
+});
+    
+</script>
+</head>
+
+  <body>
+
+   <div id="espaceDeJeu">
+    <h1>Le jeux commence ici </h1>
+        <ul>
+
+        </ul>
+    
+   </div>
+
+
+    <div>
+        <label>lettre :</label>
+        <input type="text" id="lettre" />
+        <button id="bouttonEnvoi"> submit </button>
+    </div>
+
+
+<ul id="LettrePasBonne"> Les lettre qui sont pas bonnes 
+
+</ul>
+
+<ul id="LettreDejaDit"> Les lettre qui sont déjà utilisé
+    
+</ul>
+
+  </body>
+</html>
+
